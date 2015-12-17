@@ -1,3 +1,5 @@
+import copy
+
 def rotateSubGridR(m, l):
 	newList = []
 	for i in range(0, m):
@@ -15,10 +17,12 @@ def rotateSubGridL(m, l):
 	return newList
 
 def rotate(n, l, e, s):
-	testList = l
+	pass
 	#en cours
+
 
 lTest = [[1,4,7],[2,5,8],[3,6,9]]
 print(lTest)
 lTest = rotateSubGridL(len(lTest), lTest)
 print(lTest)
+rotate(len(lt),lt,1,True)
