@@ -1,10 +1,10 @@
 def rotateR(m, l):
 	newList = []
 
-	for y in range(m - 1, -1, -1):
+	for col in range(m):
 		annexList = []
-		for x in range(0, m):
-			annexList.append(l[y][x])
+		for line in range(m - 1, -1, -1):
+			annexList.append(l[line][col])
 		newList.append(annexList.copy())
 
 	return newList
@@ -17,27 +17,38 @@ def rotateL(m, l):
 	return newList
 
 
-def rotate(n, l, e, left):
+def rotate(n, l, sqr, left):
 	square = []
 
-	for i in range(0, n):
-		if i < n//2:
-			if e == 0:
-				square.append(l[0:n//2][i])
-			elif e == 1 :
-				square.append(l[n//2:n][i])
+	for line in range(n):
+		if line < n//2:
+			if sqr == 0:
+				square.append(l[line][0:n//2])
+			elif sqr == 3:
+				square.append(l[line][n//2:n])
 		else:
-			if e == 2:
-				square.append(l[n//2:n][i])
-			elif e == 3:
-				square.append(l[0:n//2][i])
+			if sqr == 1:
+				square.append(l[line][0:n//2])
+			elif sqr == 2:
+				square.append(l[line][n//2:n])
 
 	square = rotateL(n//2, square) if left else rotateR(n//2, square)
+	for line in range(n):
+		for col in range(n):
+			pass
+			#reinserer square dans la liste
 	return square
 	#gerer le retour
 
-lTest = [[1, 2, 3, 4],
-		 [11, 22, 33, 44],
-		 [111, 222, 333, 444],
-		 [1111, 2222, 3333, 4444]]
-print(rotate(4, lTest, 0, True))
+
+lTest = [
+	[1, 0, 0, 1, 0, 0],
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 2, 0, 0, 2],
+	[1, 0, 0, 1, 0, 0],
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 2, 0, 0, 2]
+]
+result = rotateR(6, lTest)
+for i in result:
+	print(i)
