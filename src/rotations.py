@@ -9,36 +9,64 @@ def rotateR(m, l):
 
 	return newList
 
-
 def rotateL(m, l):
-	newList = l.copy()
-	for k in range(0, 3):
-		newList = rotateR(m, newList)
-	return newList
+	for k in range(3):
+		l = rotateR(m, l)
+
+	return l
 
 
 def rotate(n, l, sqr, left):
 	square = []
+	#isoler le quadrant n. sqr
 
-	for line in range(n):
-		if line < n//2:
-			if sqr == 0:
-				square.append(l[line][0:n//2])
-			elif sqr == 3:
-				square.append(l[line][n//2:n])
-		else:
-			if sqr == 1:
-				square.append(l[line][0:n//2])
-			elif sqr == 2:
-				square.append(l[line][n//2:n])
+	if sqr == 0:
+		for line in range(n//2):
+			linedSquare = []
+			for col in range(n//2):
+				linedSquare.append(l[line][col])
+			square.append(linedSquare.copy())
+	elif sqr == 1:
+		for line in range(n//2, n):
+			linedSquare = []
+			for col in range(n//2):
+				linedSquare.append(l[line][col])
+			square.append(linedSquare.copy())
+	elif sqr == 2:
+		for line in range(n//2, n):
+			linedSquare = []
+			for col in range(n//2, n):
+				linedSquare.append(l[line][col])
+			square.append(linedSquare.copy())
+	elif sqr == 3:
+		for line in range(n//2):
+			linedSquare = []
+			for col in range(n//2, n):
+				linedSquare.append(l[line][col])
+			square.append(linedSquare.copy())
 
+	#effectuer la rotation du quadrant
 	square = rotateL(n//2, square) if left else rotateR(n//2, square)
-	for line in range(n):
-		for col in range(n):
-			pass
-			#reinserer square dans la liste
-	return square
-	#gerer le retour
+
+	#reinserer le quadrant dans la liste
+	if sqr == 0:
+		for line in range(n//2):
+			for col in range(n//2):
+				l[line][col] = square[line][col]
+	elif sqr == 1:
+		for line in range(n//2, n):
+			for col in range(n//2):
+				l[line][col] = square[line - 3][col]
+	elif sqr == 2:
+		for line in range(n//2, n):
+			for col in range(n//2, n):
+				l[line][col] = square[line - 3][col - 3]
+	elif sqr == 3:
+		for line in range(n//2):
+			for col in range(n//2, n):
+				l[line][col] = square[line][col - 3]
+
+	return l
 
 
 lTest = [
@@ -49,6 +77,6 @@ lTest = [
 	[0, 0, 0, 0, 0, 0],
 	[0, 0, 2, 0, 0, 2]
 ]
-result = rotateR(6, lTest)
+result = rotate(6, lTest, 0, False)
 for i in result:
 	print(i)
