@@ -53,6 +53,22 @@ CHIPS_POSITION = [] #besoin pour les interactions souris
 
 
 # Functions #
+def _initChipsPos_(grid):
+	blocks = len(grid) // 3
+	for y in range(blocks):
+		yOffset = BLOCK_SPACING if y == 0 else BLOCK_SPACING * 2
+		for x in range(blocks):
+			xOffset = BLOCK_SPACING if x == 0 else BLOCK_SPACING * 2
+			posX, posY = x * BLOCK_SIZE[0] + xOffset, y * BLOCK_SIZE[1] + yOffset
+			for yy in range(3):
+				yOffset2 = CHIP_SPACING + 30 if yy == 0 else CHIP_SPACING + CHIP_SIZE
+				for xx in range(3):
+					xOffset2 = CHIP_SPACING + 30 if xx == 0 else CHIP_SPACING + CHIP_SIZE
+					CHIPS_POSITION.append((posX + xx * xOffset2, posY + yy * yOffset2))
+
+	print(CHIPS_POSITION)
+_initChipsPos_(GRID)
+
 
 def drawBlock(grid, surface, posX, posY, indX, indY):
 	surface.blit(BLOCK, (posX, posY))
