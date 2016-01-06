@@ -33,6 +33,8 @@ EMPTY_CHIP.fill((255, 255, 255, 30), None, pygame.BLEND_RGBA_MULT)  # Makes chip
 pieceBlack = pygame.image.load(os.path.join(WD, '..', 'resources', 'pieceBlack.png')).convert_alpha()
 BLACK_CHIP = pygame.transform.scale(pieceBlack, (60, 60))
 
+FONT = pygame.font.Font(None, 30)
+
 # GUI Constants #
 BLOCK_SPACING = 30
 BLOCK_SIZE = (180, 180)
@@ -44,8 +46,15 @@ CHIP_SPACING = 40
 CHIP_SIZE = 20
 CHIPS = (EMPTY_CHIP, WHITE_CHIP, BLACK_CHIP)
 
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+CHIPS_POSITION = [] #besoin pour les interactions souris
+
 
 # Functions #
+
+
 def drawBlock(grid, surface, posX, posY, indX, indY):
 	surface.blit(BLOCK, (posX, posY))
 
@@ -66,7 +75,22 @@ def drawGrid(grid, surface):
 			drawBlock(grid, surface, x * BLOCK_SIZE[0] + xOffset, y * BLOCK_SIZE[1] + yOffset, x * 3, y * 3)
 
 
+def putChip(grid, surface, player):
+	pass
+
+
+def signalTurn(surface, player):
+	sentence = "Poser un pion " + "blanc" if player == 1 else "noir"
+
+	sentenceSurface = FONT.render(sentence, True, BLACK, WHITE)
+	sentenceRect = sentenceSurface.get_rect()
+	sentenceRect.topleft = (FRAME_SIZE[0] - FONT.size(sentence)[0], FRAME_SIZE[1]//2)
+
+	surface.blit(sentenceSurface,sentenceRect)
+
+
 drawGrid(GRID, mainFrame)
+putChip(GRID, mainFrame, 1)
 
 # Event Loop #
 playing = True
@@ -77,6 +101,8 @@ while playing:
 	for event in pygame.event.get():
 		if event.type == QUIT:
 			playing = False
+		if event.type == MOUSEBUTTONUP:
+			print(event.pos)
 
 	pygame.display.update()
 
