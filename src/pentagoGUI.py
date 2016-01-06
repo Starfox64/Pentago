@@ -54,7 +54,6 @@ CHIPS_POSITION = [] #besoin pour les interactions souris
 
 # Functions #
 
-
 def drawBlock(grid, surface, posX, posY, indX, indY):
 	surface.blit(BLOCK, (posX, posY))
 
