@@ -1,9 +1,9 @@
 import pygame
 import os
+from src.rotations import *
 from pygame.locals import *
 
 FRAME_SIZE = (640, 480)
-
 pygame.init()
 mainFrame = pygame.display.set_mode(FRAME_SIZE)
 pygame.display.set_caption('Pentago')
@@ -99,7 +99,7 @@ def drawGrid(grid, surface):
 			drawBlock(grid, surface, x * BLOCK_SIZE[0] + xOffset, y * BLOCK_SIZE[1] + yOffset, x * 3, y * 3)
 
 
-def putChip(grid, surface, player):
+def putChip(grid, surface, player, chipPos):
 	signalTurn(surface, player)
 
 
@@ -114,7 +114,7 @@ def signalTurn(surface, player):
 
 
 drawGrid(GRID, mainFrame)
-putChip(GRID, mainFrame, 1)
+putChip(GRID, mainFrame, 1, (0, 0))
 
 # Event Loop #
 playing = True
@@ -126,6 +126,16 @@ while playing:
 		if event.type == QUIT:
 			playing = False
 		if event.type == MOUSEBUTTONUP:
+			if gameState == 1:
+				for i in BUTTONS:
+					if i["name"] == "chip:":
+						if i["position"][0] <= event.pos <= i["position"][0] + CHIP_SIZE:
+							putChip(GRID, mainFrame, currentPlayer, i["position"])
+				pass
+			elif gameState == 2:
+				pass
+			else:
+				pass
 			print(event.pos)
 
 	pygame.display.update()
