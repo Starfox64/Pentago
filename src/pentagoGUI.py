@@ -49,7 +49,7 @@ CHIPS = (EMPTY_CHIP, WHITE_CHIP, BLACK_CHIP)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-CHIPS_POSITION = [] #besoin pour les interactions souris
+BUTTONS = []
 
 
 # Functions #
@@ -60,13 +60,22 @@ def _initChipsPos_(grid):
 		for x in range(blocks):
 			xOffset = BLOCK_SPACING if x == 0 else BLOCK_SPACING * 2
 			posX, posY = x * BLOCK_SIZE[0] + xOffset, y * BLOCK_SIZE[1] + yOffset
+			indX, indY = x * 3, y * 3
 			for yy in range(3):
 				yOffset2 = CHIP_SPACING + 30 if yy == 0 else CHIP_SPACING + CHIP_SIZE
 				for xx in range(3):
 					xOffset2 = CHIP_SPACING + 30 if xx == 0 else CHIP_SPACING + CHIP_SIZE
-					CHIPS_POSITION.append((posX + xx * xOffset2, posY + yy * yOffset2))
-
-	print(CHIPS_POSITION)
+					indX, indY = indX + xx, indY + yy
+					BUTTONS.append(
+						dict([
+							("name", "chip"),
+							("position", (posX + xx * xOffset2, posY + yy * yOffset2)),
+							("usageTime", 1),
+							("listIndex", (indY, indX))
+						])
+					)
+	for i in BUTTONS:
+		print(i["listIndex"] + i["position"], sep=", ")
 _initChipsPos_(GRID)
 
 
@@ -91,11 +100,11 @@ def drawGrid(grid, surface):
 
 
 def putChip(grid, surface, player):
-	pass
+	signalTurn(surface, player)
 
 
 def signalTurn(surface, player):
-	sentence = "Poser un pion " + "blanc" if player == 1 else "noir"
+	sentence = "Poser un pion " + ("blanc" if player == 1 else "noir")
 
 	sentenceSurface = FONT.render(sentence, True, BLACK, WHITE)
 	sentenceRect = sentenceSurface.get_rect()
