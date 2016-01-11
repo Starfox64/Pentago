@@ -145,6 +145,7 @@ while playing:
 			for i in BUTTONS:
 				if i["position"][0] <= event.pos[0] <= (i["position"][0] + i["size"][0]) and i["position"][1] <= event.pos[1] <= (i["position"][0] + i["size"][1]):
 					displayIndication(mainFrame, "Zone interactible", "warning")
+
 					if gameState == i["gamePhase"]:
 						if i["name"] == "chip":
 							if putChip(currentPlayer, i["listIndex"]) is None:
