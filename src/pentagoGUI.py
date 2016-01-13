@@ -43,7 +43,7 @@ BLOCK = pygame.Surface(BLOCK_SIZE, pygame.SRCALPHA)
 BLOCK.fill((70, 70, 70, 80))
 
 CHIP_SPACING = 40
-CHIP_SIZE = 20
+CHIP_SIZE = 64
 CHIPS = (EMPTY_CHIP, WHITE_CHIP, BLACK_CHIP)
 
 WHITE = (255, 255, 255)
@@ -61,14 +61,14 @@ def _initChipsPos_(grid):
 		for x in range(blocks):
 			xOffset = BLOCK_SPACING if x == 0 else BLOCK_SPACING * 2
 			posX, posY = x * BLOCK_SIZE[0] + xOffset, y * BLOCK_SIZE[1] + yOffset
-#			indX, indY = x * 3, y * 3
 			for yy in range(3):
-				yOffset2 = CHIP_SPACING + 30 if yy == 0 else CHIP_SPACING + CHIP_SIZE
+				yOffset2 = CHIP_SPACING + 30 if yy == 0 else CHIP_SPACING + 20
 				for xx in range(3):
 					indX, indY = x * 3, y * 3
-					xOffset2 = CHIP_SPACING + 30 if xx == 0 else CHIP_SPACING + CHIP_SIZE
+					xOffset2 = CHIP_SPACING + 30 if xx == 0 else CHIP_SPACING + 20
 					indX += xx
 					indY += yy
+					print(posX + xx*xOffset2, posY + yy*yOffset2)
 					BUTTONS.append(
 						dict([
 							("name", "chip"),
@@ -78,8 +78,6 @@ def _initChipsPos_(grid):
 							("listIndex", (indY, indX))
 						])
 					)
-	for i in BUTTONS:
-		print(i["listIndex"])
 _initChipsPos_(GRID)
 
 
@@ -87,12 +85,12 @@ def drawBlock(grid, surface, posX, posY, indX, indY):
 	surface.blit(BLOCK, (posX, posY))
 
 	for y in range(3):
-		yOffset = CHIP_SPACING + 30 if y == 0 else CHIP_SPACING + CHIP_SIZE
+		yOffset = CHIP_SPACING + 30 if y == 0 else CHIP_SPACING + 20
 		for x in range(3):
-			xOffset = CHIP_SPACING + 30 if x == 0 else CHIP_SPACING + CHIP_SIZE
+			xOffset = CHIP_SPACING + 30 if x == 0 else CHIP_SPACING + 20
 			chip = CHIPS[grid[indY + y][indX + x]]
-			print(indY + y, indX + x)
 			surface.blit(chip, (posX + x * xOffset, posY + y * yOffset))
+			print((posX + x * xOffset, posY + y * yOffset))
 
 
 def drawGrid(grid, surface):
@@ -108,8 +106,9 @@ def putChip(player, chipPos):
 
 	if GRID[chipPos[0]][chipPos[1]] == 0 :
 		GRID[chipPos[0]][chipPos[1]] = player
+		return True
 	else:
-		pass
+		return False
 
 
 def displayIndication(surface, sentence, indicationLevel):
@@ -126,34 +125,42 @@ def displayIndication(surface, sentence, indicationLevel):
 
 	surface.blit(sentenceSurface,sentenceRect)
 
-
-drawGrid(GRID, mainFrame)
-
 # Event Loop #
 playing = True
+redraw = False
 currentPlayer = 1
 gameState = 1  # 1: Placing / 2: Rotating / 3: Over
 drawGrid(GRID, mainFrame)
 
 while playing:
-	if gameState == 1:
-		displayIndication(mainFrame, "Poser un pion " + ("blanc" if currentPlayer == 1 else "noir"), "instruction")
+
+
 	for event in pygame.event.get():
 		if event.type == QUIT:
 			playing = False
+
 		if event.type == MOUSEBUTTONUP:
+			print(event.pos)
+			print(pygame.mouse.get_pos())
+
 			for i in BUTTONS:
-				if i["position"][0] <= event.pos[0] <= (i["position"][0] + i["size"][0]) and i["position"][1] <= event.pos[1] <= (i["position"][0] + i["size"][1]):
+				if i["position"][0] <= event.pos[0] <= (i["position"][0] + i["size"][0]) and i["position"][1] <= event.pos[1] <= (i["position"][1] + i["size"][1]):
 					displayIndication(mainFrame, "Zone interactible", "warning")
 
-					if gameState == i["gamePhase"]:
-						if i["name"] == "chip":
-							if putChip(currentPlayer, i["listIndex"]) is None:
-								currentPlayer = 2 if currentPlayer == 1 else 1
-								break
-			else:
-				displayIndication(mainFrame, "Zone non interactible", "warning")
-			print(event.pos)
+#					if gameState == i["gamePhase"]:
+#						if i["name"] == "chip":
+					if putChip(currentPlayer, i["listIndex"]) is True:
+						currentPlayer = 2 if currentPlayer == 1 else 1
+						redraw = True
+						break
+					else:
+						displayIndication(mainFrame, "Case Indisponible", "warning")
+						redraw = False
+	if redraw:
+		mainFrame.blit(BG, (0, 0))
+		drawGrid(GRID, mainFrame)
+		displayIndication(mainFrame, "Poser un pion " + ("blanc" if currentPlayer == 1 else "noir"), "instruction")
+
 
 	pygame.display.update()
 
