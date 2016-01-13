@@ -70,44 +70,6 @@ def newGame():
 	displayIndication(mainFrame, 'Place a ' + ('white' if currentPlayer == 1 else 'black') + ' chip.')
 
 
-def initClickPos(grid):
-	global clickPos
-	clickPos = list()
-	blocks = len(grid) // 3
-
-	for y in range(blocks):
-		yOffset = BLOCK_SPACING if y == 0 else BLOCK_SPACING * 2
-		for x in range(blocks):
-			xOffset = BLOCK_SPACING if x == 0 else BLOCK_SPACING * 2
-			posX, posY = x * BLOCK_SIZE[0] + xOffset, y * BLOCK_SIZE[1] + yOffset
-			for yy in range(3):
-				yOffset2 = CHIP_SPACING + 30 if yy == 0 else CHIP_SPACING + 20
-				for xx in range(3):
-					indX, indY = x * 3, y * 3
-					xOffset2 = CHIP_SPACING + 30 if xx == 0 else CHIP_SPACING + 20
-					indX += xx
-					indY += yy
-
-					clickPos.append(
-						dict([
-							('type', 'slot'),
-							('pos', (posX + xx * xOffset2, posY + yy * yOffset2)),
-							('size', (CHIP_SIZE, CHIP_SIZE)),
-							('index', (indY, indX))
-						])
-					)
-
-
-#def drawBlock(grid, surface, posX, posY, indX, indY):
-#	surface.blit(BLOCK, (posX, posY))
-#	global clickPos
-#	for click in clickPos:
-#		if click['type'] == 'slot':
-#			if (indY <= click['index'][0] < indY + 3) and (indX <= click['index'][1] < indX + 3):
-#				chip = CHIPS[grid[click['index'][0]][click['index'][1]]]
-#				surface.blit(chip, (click['index'][0], click['index'][1]))
-
-
 def drawBlock(grid, surface, posX, posY, indX, indY, calcClickPos):
 	surface.blit(BLOCK, (posX, posY))
 
