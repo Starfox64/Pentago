@@ -68,7 +68,7 @@ def _initChipsPos_(grid):
 					xOffset2 = CHIP_SPACING + 30 if xx == 0 else CHIP_SPACING + 20
 					indX += xx
 					indY += yy
-					print(posX + xx*xOffset2, posY + yy*yOffset2)
+#					print(posX + xx*xOffset2, posY + yy*yOffset2)
 					BUTTONS.append(
 						dict([
 							("name", "chip"),
@@ -83,14 +83,17 @@ _initChipsPos_(GRID)
 
 def drawBlock(grid, surface, posX, posY, indX, indY):
 	surface.blit(BLOCK, (posX, posY))
-
-	for y in range(3):
-		yOffset = CHIP_SPACING + 30 if y == 0 else CHIP_SPACING + 20
-		for x in range(3):
-			xOffset = CHIP_SPACING + 30 if x == 0 else CHIP_SPACING + 20
-			chip = CHIPS[grid[indY + y][indX + x]]
-			surface.blit(chip, (posX + x * xOffset, posY + y * yOffset))
-			print((posX + x * xOffset, posY + y * yOffset))
+	for z in BUTTONS:
+		if z["name"] == "chip":
+			if (indY <= z["listIndex"][0] < indY + 3) and (indX <= z["listIndex"][1] < indX + 3):
+				chip = CHIPS[  grid[z["listIndex"][0]][z["listIndex"][1] ]  ]
+				surface.blit(chip, (z["position"][0], z["position"][1]))
+#	for y in range(3):
+#		yOffset = CHIP_SPACING + 30 if y == 0 else CHIP_SPACING + 20
+#		for x in range(3):
+#			xOffset = CHIP_SPACING + 30 if x == 0 else CHIP_SPACING + 20
+#			chip = CHIPS[grid[indY + y][indX + x]]
+#			surface.blit(chip, (posX + x * xOffset, posY + y * yOffset))
 
 
 def drawGrid(grid, surface):
@@ -99,6 +102,7 @@ def drawGrid(grid, surface):
 		yOffset = BLOCK_SPACING if y == 0 else BLOCK_SPACING * 2
 		for x in range(blocks):
 			xOffset = BLOCK_SPACING if x == 0 else BLOCK_SPACING * 2
+			surface.blit(BLOCK, (x * BLOCK_SIZE[0] + xOffset, y * BLOCK_SIZE[1] + yOffset))
 			drawBlock(grid, surface, x * BLOCK_SIZE[0] + xOffset, y * BLOCK_SIZE[1] + yOffset, x * 3, y * 3)
 
 
@@ -131,6 +135,7 @@ redraw = False
 currentPlayer = 1
 gameState = 1  # 1: Placing / 2: Rotating / 3: Over
 drawGrid(GRID, mainFrame)
+displayIndication(mainFrame, "Poser un pion " + ("blanc" if currentPlayer == 1 else "noir"), "instruction")
 
 while playing:
 
