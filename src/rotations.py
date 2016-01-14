@@ -9,10 +9,17 @@ def rotateR(m, l):
 
 	return newList
 
+
 def rotateL(m, l):
-	for k in range(3):
-		l = rotateR(m, l)
-	return l
+	newList = []
+
+	for col in range(m - 1, -1, -1):
+		annexList = []
+		for line in range(m):
+			annexList.append(l[line][col])
+		newList.append(annexList.copy())
+
+	return newList
 
 
 def rotate(n, l, indX, indY, left):
