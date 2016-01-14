@@ -18,7 +18,6 @@ WD = os.getcwd()  # Working Directory
 # Resources #
 BG = pygame.image.load(os.path.join(WD, '../resources/bg.jpg'))
 BG = pygame.transform.scale(BG, FRAME_SIZE)
-mainFrame.blit(BG, (0, 0))
 
 pieceWhite = pygame.image.load(os.path.join(WD, '../resources/pieceWhite.png')).convert_alpha()
 WHITE_CHIP = pygame.transform.scale(pieceWhite, (60, 60))
@@ -28,6 +27,18 @@ EMPTY_CHIP.fill((255, 255, 255, 30), None, pygame.BLEND_RGBA_MULT)  # Makes chip
 
 pieceBlack = pygame.image.load(os.path.join(WD, '../resources/pieceBlack.png')).convert_alpha()
 BLACK_CHIP = pygame.transform.scale(pieceBlack, (60, 60))
+
+sliderLeft = pygame.image.load(os.path.join(WD, '../resources/grey_sliderLeft.png')).convert_alpha()
+LEFT_SLIDER = pygame.transform.scale(sliderLeft, (40, 30))
+
+LEFT_SLIDER_T = LEFT_SLIDER.copy()
+LEFT_SLIDER_T.fill((255, 255, 255, 50), None, pygame.BLEND_RGBA_MULT)
+
+sliderRight = pygame.image.load(os.path.join(WD, '../resources/grey_sliderRight.png')).convert_alpha()
+RIGHT_SLIDER = pygame.transform.scale(sliderRight, (40, 30))
+
+RIGHT_SLIDER_T = RIGHT_SLIDER.copy()
+RIGHT_SLIDER_T.fill((255, 255, 255, 50), None, pygame.BLEND_RGBA_MULT)
 
 FONT = pygame.font.Font(None, 30)
 
@@ -70,8 +81,23 @@ def newGame():
 	displayIndication(mainFrame, 'Place a ' + ('white' if currentPlayer == 1 else 'black') + ' chip.')
 
 
+def addClickPos(type, pos, size, args):
+	clickPos.append({
+		'type': type,
+		'pos': pos,
+		'size': size,
+		'args': args
+	})
+
+
 def drawBlock(grid, surface, posX, posY, indX, indY, calcClickPos):
 	surface.blit(BLOCK, (posX, posY))
+	surface.blit(LEFT_SLIDER if gameState == 2 else LEFT_SLIDER_T, (posX - 5 + BLOCK_SIZE[0] / 6, posY - 30))
+	surface.blit(RIGHT_SLIDER if gameState == 2 else RIGHT_SLIDER_T, (posX - 5 + 4 * (BLOCK_SIZE[0] / 6), posY - 30))
+
+	if calcClickPos:
+		addClickPos('rotate', (posX - 5 + BLOCK_SIZE[0] / 6, posY - 30), (40, 30), {'left': True})  # BLOCKID
+		addClickPos('rotate', (posX - 5 + 4 * (BLOCK_SIZE[0] / 6), posY - 30), (40, 30), {'left': False})
 
 	for y in range(3):
 		yOffset = CHIP_SPACING + 10 if y == 0 else CHIP_SPACING + 20
@@ -81,14 +107,11 @@ def drawBlock(grid, surface, posX, posY, indX, indY, calcClickPos):
 			surface.blit(chip, (posX + x * xOffset, posY + y * yOffset))
 
 			if calcClickPos:
-				global clickPos
-				clickPos.append(
-					dict([
-						('type', 'slot'),
-						('pos', (posX + x * xOffset, posY + y * yOffset)),
-						('size', (CHIP_SIZE, CHIP_SIZE)),
-						('index', (indY + y, indX + x))
-					])
+				addClickPos(
+					'slot',
+					(posX + x * xOffset, posY + y * yOffset),
+					(CHIP_SIZE, CHIP_SIZE),
+					{'index': (indY + y, indX + x)}
 				)
 
 
@@ -96,7 +119,6 @@ def drawGrid(grid, surface, calcClickPos=False):
 	if calcClickPos:
 		global clickPos
 		clickPos = list()
-		print('Clearing')
 
 	blocks = len(grid) // 3
 	for y in range(blocks):
@@ -144,10 +166,13 @@ while playing:
 					click['pos'][0] <= event.pos[0] <= (click['pos'][0] + click['size'][0]) and
 					click['pos'][1] <= event.pos[1] <= (click['pos'][1] + click['size'][1])
 				):
-					if click['type'] == 'slot':
-						if putChip(currentGrid, currentPlayer, click['index']):
+					if click['type'] == 'slot' and gameState == 1:
+						if putChip(currentGrid, currentPlayer, click['args']['index']):
 							currentPlayer = 2 if currentPlayer == 1 else 1
+							gameState = 2
 							redraw = True
+					elif click['type'] == 'rotate' and gameState == 2:
+						print('Rotated')
 					elif click['type'] == 'newgame':
 						newGame()
 					break
