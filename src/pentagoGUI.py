@@ -113,14 +113,14 @@ def addClickPos(type, pos, size, args=None):
 	})
 
 
-def aI(grid):
+def ai(grid):
 	l = len(grid)
 	posX = randint(0, l - 1)
 	posY = randint(0, l - 1)
-	while grid[posY][posX] == 0:
+	while grid[posY][posX] != 0:
 		posX = randint(0, l - 1)
 		posY = randint(0, l - 1)
-	putChip(grid, 1, (posY, posX))
+	putChip(grid, 2, (posY, posX))
 	left = True if randint(0, 1) == 1 else False
 	posX, posY = randint(0, l // 3 - 1), randint(0, l // 3 - 1)
 	grid = rotate(l, grid, posX, posY, left)
@@ -166,7 +166,7 @@ def draw(grid, surface, calcClickPos=False):
 	newRect = drawText(surface, ' New Game', WHITE, BLACK, 50)
 	loadRect = drawText(surface, 'Load Game', WHITE, BLACK, 75)
 	saveRect = drawText(surface, 'Save Game', WHITE, BLACK, 100)
-	aiRect = drawText(surface, 'Desactivate AI' if aIEnabled else 'Activate AI', WHITE, BLACK, 150)
+	aiRect = drawText(surface, 'Deactivate AI' if AIEnabled else 'Activate AI', WHITE, BLACK, 150)
 
 	if calcClickPos:
 		global clickPos
@@ -174,7 +174,7 @@ def draw(grid, surface, calcClickPos=False):
 		addClickPos('newgame', newRect.topleft, newRect.size)
 		addClickPos('loadgame', loadRect.topleft, loadRect.size)
 		addClickPos('savegame', saveRect.topleft, saveRect.size)
-		addClickPos('aI', aiRect.topleft, aiRect.size)
+		addClickPos('ai', aiRect.topleft, aiRect.size)
 
 	blocks = len(grid) // 3
 	for y in range(blocks):
@@ -212,15 +212,13 @@ def drawText(surface, text, textCol=BLACK, bgCol=WHITE, y=None):
 # Event Loop #
 playing = True
 update = False
-aIEnabled = False
+AIEnabled = False
 newGame()
 
 while playing:
 
-	if currentPlayer == 2 and aIEnabled:
-		print(currentGrid)
-		currentGrid = aI(currentGrid)
-		print(currentGrid)
+	if currentPlayer == 2 and AIEnabled:
+		currentGrid = ai(currentGrid)
 		currentPlayer = 1
 		update = True
 
@@ -265,9 +263,8 @@ while playing:
 						bottomNotif = saveGame(currentGrid, gameState, currentPlayer)
 					elif click['type'] == 'loadgame':
 						bottomNotif = loadGame()
-					elif click['type'] == 'aI':
-						aIEnabled = not aIEnabled
-						print(aIEnabled)
+					elif click['type'] == 'ai':
+						AIEnabled = not AIEnabled
 					break
 
 	if update:
