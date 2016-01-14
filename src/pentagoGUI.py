@@ -113,6 +113,20 @@ def addClickPos(type, pos, size, args=None):
 	})
 
 
+def aI(grid):
+	l = len(grid)
+	posX = randint(0, l - 1)
+	posY = randint(0, l - 1)
+	while grid[posY][posX] == 0:
+		posX = randint(0, l - 1)
+		posY = randint(0, l - 1)
+	putChip(grid, 1, (posY, posX))
+	left = True if randint(0, 1) == 1 else False
+	posX, posY = randint(0, l // 3 - 1), randint(0, l // 3 - 1)
+	grid = rotate(l, grid, posX, posY, left)
+	return grid
+
+
 def drawBlock(grid, surface, posX, posY, indX, indY, calcClickPos):
 	surface.blit(BLOCK, (posX, posY))
 	surface.blit(LEFT_SLIDER if gameState == 2 else LEFT_SLIDER_T, (posX - 5 + BLOCK_SIZE[0] / 6, posY - 30))
@@ -152,6 +166,7 @@ def draw(grid, surface, calcClickPos=False):
 	newRect = drawText(surface, ' New Game', WHITE, BLACK, 50)
 	loadRect = drawText(surface, 'Load Game', WHITE, BLACK, 75)
 	saveRect = drawText(surface, 'Save Game', WHITE, BLACK, 100)
+	aiRect = drawText(surface, 'Desactivate AI' if aIEnabled else 'Activate AI', WHITE, BLACK, 150)
 
 	if calcClickPos:
 		global clickPos
@@ -159,6 +174,7 @@ def draw(grid, surface, calcClickPos=False):
 		addClickPos('newgame', newRect.topleft, newRect.size)
 		addClickPos('loadgame', loadRect.topleft, loadRect.size)
 		addClickPos('savegame', saveRect.topleft, saveRect.size)
+		addClickPos('aI', aiRect.topleft, aiRect.size)
 
 	blocks = len(grid) // 3
 	for y in range(blocks):
@@ -196,9 +212,18 @@ def drawText(surface, text, textCol=BLACK, bgCol=WHITE, y=None):
 # Event Loop #
 playing = True
 update = False
+aIEnabled = False
 newGame()
 
 while playing:
+
+	if currentPlayer == 2 and aIEnabled:
+		print(currentGrid)
+		currentGrid = aI(currentGrid)
+		print(currentGrid)
+		currentPlayer = 1
+		update = True
+
 	for event in pygame.event.get():
 		if event.type == QUIT:
 			playing = False
@@ -240,6 +265,9 @@ while playing:
 						bottomNotif = saveGame(currentGrid, gameState, currentPlayer)
 					elif click['type'] == 'loadgame':
 						bottomNotif = loadGame()
+					elif click['type'] == 'aI':
+						aIEnabled = not aIEnabled
+						print(aIEnabled)
 					break
 
 	if update:
