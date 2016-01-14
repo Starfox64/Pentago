@@ -3,6 +3,9 @@ import os
 import json
 from random import randint
 from pygame.locals import *
+from src.rotations import *
+from src.bases import *
+from src.alignements import *
 
 FRAME_SIZE = (640, 480)
 
@@ -68,8 +71,6 @@ ALIGN_WIN = 5
 
 
 # Functions #
-def generateGrid(n):
-	return [[0 for i in range(n)] for i in range(n)]
 
 
 def newGame(grid=None, state=1, player=1):
@@ -190,138 +191,6 @@ def drawText(surface, text, textCol=BLACK, bgCol=WHITE, y=None):
 
 	surface.blit(textSurface, rect)
 	return rect
-
-
-def rotateR(m, l):
-	newList = []
-
-	for col in range(m):
-		annexList = []
-		for line in range(m - 1, -1, -1):
-			annexList.append(l[line][col])
-		newList.append(annexList.copy())
-
-	return newList
-
-
-def rotateL(m, l):
-	for k in range(3):
-		l = rotateR(m, l)
-	return l
-
-
-def rotate(n, l, indX, indY, left):
-	square = []
-
-	# isoler le quadrant n. sqr
-	if indX == 0 and indY == 0:
-		for line in range(n//2):
-			linedSquare = []
-			for col in range(n//2):
-				linedSquare.append(l[line][col])
-			square.append(linedSquare.copy())
-	elif indX == 0 and indY == 1:
-		for line in range(n//2, n):
-			linedSquare = []
-			for col in range(n//2):
-				linedSquare.append(l[line][col])
-			square.append(linedSquare.copy())
-	elif indX == 1 and indY == 1:
-		for line in range(n//2, n):
-			linedSquare = []
-			for col in range(n//2, n):
-				linedSquare.append(l[line][col])
-			square.append(linedSquare.copy())
-	elif indX == 1 and indY == 0:
-		for line in range(n//2):
-			linedSquare = []
-			for col in range(n//2, n):
-				linedSquare.append(l[line][col])
-			square.append(linedSquare.copy())
-
-	# effectuer la rotation du quadrant
-	square = rotateL(n//2, square) if left else rotateR(n//2, square)
-
-	# reinserer le quadrant dans la liste
-	if indX == 0 and indY == 0:
-		for line in range(n//2):
-			for col in range(n//2):
-				l[line][col] = square[line][col]
-	elif indX == 0 and indY == 1:
-		for line in range(n//2, n):
-			for col in range(n//2):
-				l[line][col] = square[line - 3][col]
-	elif indX == 1 and indY == 1:
-		for line in range(n//2, n):
-			for col in range(n//2, n):
-				l[line][col] = square[line - 3][col - 3]
-	elif indX == 1 and indY == 0:
-		for line in range(n//2):
-			for col in range(n//2, n):
-				l[line][col] = square[line][col - 3]
-
-	return l
-
-
-def checkAlignH(n, grid, p, j):
-	for lineI in range(n):
-		aligned = 0
-		for colI in range(n):
-			if grid[lineI][colI] == j:
-				aligned += 1
-			else:
-				aligned = 0
-
-			if aligned == p:
-				return True
-	return False
-
-
-def checkAlignV(n, grid, p, j):
-	for colI in range(n):
-		aligned = 0
-		for lineI in range(n):
-			if grid[lineI][colI] == j:
-				aligned += 1
-			else:
-				aligned = 0
-
-			if aligned == p:
-				return True
-	return False
-
-
-def checkAlignDBT(n, grid, p, j):
-	for lineI in range(n - 1, -1, -1):
-		for colI in range(n):
-			if grid[lineI][colI] == j:
-				offset = 1
-				while (lineI - offset >= 0) and (colI + offset < n) and (grid[lineI - offset][colI + offset] == j):
-					offset += 1
-					if offset == p:
-						return True
-	return False
-
-
-def checkAlignDTB(n, grid, p, j):
-	for lineI in range(n):
-		for colI in range(n):
-			if grid[lineI][colI] == j:
-				offset = 1
-				while (lineI + offset < n) and (colI + offset < n) and (grid[lineI + offset][colI + offset] == j):
-					offset += 1
-					if offset == p:
-						return True
-	return False
-
-
-def checkAlign(n, grid, p, j):
-	return (
-		checkAlignH(n, grid, p, j) or
-		checkAlignV(n, grid, p, j) or
-		checkAlignDBT(n, grid, p, j) or
-		checkAlignDTB(n, grid, p, j)
-	)
 
 
 # Event Loop #
