@@ -167,6 +167,7 @@ def draw(grid, surface, calcClickPos=False):
 	loadRect = drawText(surface, 'Load Game', WHITE, BLACK, 75)
 	saveRect = drawText(surface, 'Save Game', WHITE, BLACK, 100)
 	aiRect = drawText(surface, 'Deactivate AI' if AIEnabled else 'Activate AI', WHITE, BLACK, 150)
+	quitRect = drawText(surface, 'Quit Game', WHITE, BLACK, 200)
 
 	if calcClickPos:
 		global clickPos
@@ -175,6 +176,7 @@ def draw(grid, surface, calcClickPos=False):
 		addClickPos('loadgame', loadRect.topleft, loadRect.size)
 		addClickPos('savegame', saveRect.topleft, saveRect.size)
 		addClickPos('ai', aiRect.topleft, aiRect.size)
+		addClickPos('quit', quitRect.topleft, quitRect.size)
 
 	blocks = len(grid) // 3
 	for y in range(blocks):
@@ -195,6 +197,14 @@ def putChip(grid, player, chipPos):
 		grid[chipPos[0]][chipPos[1]] = player
 		return True
 	return False
+
+
+def isGridFull(grid):
+	for line in grid:
+		for slot in line:
+			if not slot:
+				return False
+	return True
 
 
 def drawText(surface, text, textCol=BLACK, bgCol=WHITE, y=None):
@@ -255,6 +265,10 @@ while playing:
 							gameState = 3
 							bottomNotif = 'The ' + ('whites' if currentPlayer == 1 else 'blacks') + ' won!'
 							break
+						elif isGridFull(currentGrid):
+							gameState = 3
+							bottomNotif = 'The grid is full, nobody won!'
+							break
 						currentPlayer = 2 if currentPlayer == 1 else 1
 						gameState = 1
 					elif click['type'] == 'newgame':
@@ -265,6 +279,8 @@ while playing:
 						bottomNotif = loadGame()
 					elif click['type'] == 'ai':
 						AIEnabled = not AIEnabled
+					elif click['type'] == 'quit':
+						playing = False
 					break
 
 	if update:
