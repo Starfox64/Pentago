@@ -26,6 +26,7 @@ def rotate(n, l, indX, indY, left):
 	square = []
 
 	#isoler le quadrant n. sqr
+	#4 if consecutif permettent moins de calculs que 2 boucles for
 	if indX == 0 and indY == 0:
 		for line in range(n//2):
 			linedSquare = []
